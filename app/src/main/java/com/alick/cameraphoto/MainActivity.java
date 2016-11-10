@@ -32,6 +32,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+import static android.R.attr.data;
+
 public class MainActivity extends BasePermissionActivity {
 //常量定义
     /**
@@ -120,11 +122,11 @@ public class MainActivity extends BasePermissionActivity {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            Intent camera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            //camera.setDataAndType(Uri.fromFile(picture), "image/*");
-//            camera.putExtra("return-data", true);
-            camera.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(cameraFile));
-            startActivityForResult(camera, CODE_CAMERA_REQUEST);
+            Intent intent    = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            //intent.setDataAndType(Uri.fromFile(picture), "image/*");
+//            intent.putExtra("return-data", true);
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(cameraFile));
+            startActivityForResult(intent, CODE_CAMERA_REQUEST);
         } catch (Exception e) {
             e.printStackTrace();
             T.showShort(this, "相机不存在");
@@ -137,8 +139,8 @@ public class MainActivity extends BasePermissionActivity {
         intentFromGallery.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
         startActivityForResult(intentFromGallery, CODE_GALLERY_REQUEST);
     }
-//    ####################################
 
+    //    ####################################
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -153,16 +155,16 @@ public class MainActivity extends BasePermissionActivity {
             BLog.i("拍照后保存到图片路径:" + cameraFile.getAbsolutePath() + ",文件长度:" + cameraFile.length());
             if (cameraFile.length() == 0) {
                 //有些手机拍照后的得到图片大小为0,所以需要剪切一下文件
-                File desFile = new File(getExternalCacheDir(),System.currentTimeMillis()+ ".png");
+                File desFile = new File(getExternalCacheDir(), System.currentTimeMillis() + ".png");
                 FileUtils.cutFile(cameraFile, desFile);
-                cameraCropImageUri(Uri.parse(desFile.getAbsolutePath()));
+                cropImageUriAfterKikat(Uri.parse(desFile.getAbsolutePath()));
 //                mePresenter.saveCameraPhoto(getActivity(), desFile);
             } else {
 //                mePresenter.saveCameraPhoto(getActivity(), cameraFile);
-                cameraCropImageUri(Uri.parse(cameraFile.getAbsolutePath()));
+                cropImageUriAfterKikat(Uri.parse(cameraFile.getAbsolutePath()));
             }
-        } else if(requestCode == CODE_CROP && resultCode == RESULT_OK){
-            GlideUtils.showImage(this,cameraFile.getAbsolutePath(),ivResult);
+        } else if (requestCode == CODE_CROP && resultCode == RESULT_OK) {
+            GlideUtils.showImage(this, cameraFile.getAbsolutePath(), ivResult);
         }
 
     }
